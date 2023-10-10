@@ -54,7 +54,7 @@ class Watchlist(db.Model):
     user = db.relationship("User", back_populates="watchlists")
 
     def __repr__(self):
-        return f"Watchlist watchlist_id: {self.watchlist_id}, crypto_id = {self.crypto_id}"
+        return f"Watchlist watchlist_id: {self.watchlist_id}, crypto_id = {self.crypto_id} user_id{self.user_id}"
 
     
 def connect_to_db(flask_app, db_uri="postgresql:///crypto", echo=True):
