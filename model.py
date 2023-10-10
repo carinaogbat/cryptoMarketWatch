@@ -13,23 +13,23 @@ class User(db.Model):
     email = db.Column(db.String, unique = True)
     password = db.Column(db.String)
 
-    watchlists = db.relationship("Watchlist", back_populates="user")
-    cryptos = db.relationship("Crypto", back_populates="user")
+    watchlists = db.relationship("Watchlist", back_populates="users")
+    cryptos = db.relationship("Crypto", back_populates="users")
 
     def __repr__(self):
         return f"<User user_id = {self.user_id} email = {self.email}"
 
 
-class Crypto(db.model):
+class Crypto(db.Model):
     """A cryptocurrency"""
 
     __tablename__ = "cryptos"
 
-    crypto_id = db.column(db.Integer, autoincrement=True, primary_key=True)
-    crypto_name = db.column(db.String)
-    crypto_price = db.column(db.Decimal)
-    crypto_market_history = db.column(db.String)
-    crypto_about = db.column(db.String)
+    crypto_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    crypto_name = db.Column(db.String)
+    crypto_price = db.Column(db.DECIMAL)
+    crypto_market_history = db.Column(db.String)
+    crypto_about = db.Column(db.String)
 
     watchlists = db.relationship("Watchlist", back_populates="cryptos")
     user = db.relationship("User", back_populates="cryptos")
@@ -38,17 +38,34 @@ class Crypto(db.model):
         return f"<Crypto crypto_id: {self.crypto_id}, crypto_name: {self.crypto_name}"
 
     
-class Watchlist(db.model):
+class Watchlist(db.Model):
     """Watchlist"""
 
     __tablename__ = "watchlists"
 
-    watchlist_id = db.column(db.Integer, autoincrement=True, primary_key=True)
-    crypto_id = db.column(db.Integer, db.ForeignKey("cryptos.crypto_id"))
-    user_id = db.column(db.Integer, db.ForeignKey("users.user_id"))
+    watchlist_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    crypto_id = db.Column(db.Integer, db.ForeignKey("cryptos.crypto_id"))
+    user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"))
 
     cryptos = db.relationship("Crypto", back_populates="watchlists")
     user = db.relationship("User", back_populates="watchlists")
 
     def __repr__(self):
         return f"Watchlist watchlist_id: {self.watchlist_id}, crypto_id = {self.crypto_id}"
+
+    
+def connect_to_db(flask_app, db_uri="postgresql:///cryptoMarketWatch", echo=True):
+    flask_app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
+    flask_app.config["SQLALCHEMY_ECHO"] = echo
+    flask_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+    db.app = flask_app
+    db.init_app(flask_app)
+
+    print("Connected to the db!")
+
+
+if __name__ == "__main__":
+    from server import app
+
+    connect_to_db(app)
