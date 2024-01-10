@@ -1,4 +1,4 @@
-from flask import (Flask, jsonify, render_template, request, flash, session, redirect)
+from flask import Flask
 from model import connect_to_db, User, Crypto, Watchlist
 import os
 import crud
@@ -6,15 +6,13 @@ import crud
 app = Flask(__name__)
 app.secret_key = "dev"
 
-@app.route('/')
-def homepage():
-    """Returns homepage"""
+#Members API route
+@app.route("/members")
+def members():
 
-    return render_template('index.html')
-
-
-    
+    return {"members": ["member1", "member1", "member3"]}
+  
 
 if __name__ == "__main__":
     connect_to_db(app)
-    app.run(host="0.0.0.0", debug=True)
+    app.run(debug=True)
